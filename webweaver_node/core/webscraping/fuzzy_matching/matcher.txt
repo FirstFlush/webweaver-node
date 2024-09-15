@@ -1,0 +1,40 @@
+
+
+IF FUZZY MATCH FOUND:
+=====================================================
+-add company/whatever name to "FuzzyName" table, with foreignkey to the company/event/organization
+
+
+IF FUZZ MATCH NOT FOUND:
+=====================================================
+-create new Company/whatever object
+IF new company is very similar to something in our DB AND has same state/other requirements:
+    -create new FuzzyNearMatch object, holding foreignkeys to both objects
+
+
+Matching process:
+=====================================================
+-Grab company/event/organization name along with address/phone/city/state etc available
+-check if the company name is in our DB
+-apply Tokenization of the comapny name. so "Foo Bar Holdings" becomes ["Foo", "Bar", "Holdings"]
+    -apply partial-matching to see if the tokens appear in the DB
+-if company is in DB, check other details to confirm its the same company
+    -check country/state/zipcode/phone/email
+    -address is best indicator imo. perform true match and fuzzy match on address
+else company not in DB,
+    -first, narrow down a list of companies on which to perform fuzzy matching:
+        -find company names with the same first 3 letters as this new company
+        -must be in same industry
+        -must be same state? country? region?
+    -apply fuzzy matching with fuzz.ratio() to the name vs.... every company in the DB?
+        -if score is over 90, its a match
+        -else score is over 80, apply further processing:
+            -perform fuzz's process.extract() method on all FuzzyNames the company has
+                -if 1 hits, its a match
+
+
+
+Questions:
+=====================================================
+-applying fuzz.ratio() to every company is stupid
+-what are my "instant match" and "needs more processing" values? 90/80?
